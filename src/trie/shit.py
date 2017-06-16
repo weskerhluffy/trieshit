@@ -11,7 +11,7 @@ import fileinput
 import string
 
 nivel_log = logging.ERROR
-nivel_log = logging.DEBUG
+#nivel_log = logging.DEBUG
 logger_cagada = None
 raiz_trie = None
 
@@ -71,12 +71,67 @@ def trie_shit_construie(lista_cadenas):
                 nodo_actual.peso_n = peso
         
         logger_cagada.debug("se termino de procesar mamada")
-        
-def trie_shit_core(lista_cadenas):
+
+def trie_shit_dfs(nodo_inicial):
     global raiz_trie
+    ia_vistos = set()
+    stacaca = []
+    caracteres_stacaca = []
+    maxima_caca = 0
+    cadena_maxima = ""
+    
+    stacaca.append(nodo_inicial)
+    while(stacaca):
+        nodo_act = stacaca.pop()
+        logger_cagada.debug("nodo act %s" % nodo_act)
+        if(nodo_act in ia_vistos):
+            caracteres_stacaca.pop()
+            logger_cagada.debug("el nodo %s ia valio verga" % nodo_act)
+        else:
+            ia_vistos.add(nodo_act)
+            stacaca.append(nodo_act)
+            for ijo_puta in nodo_act.apuntadores:
+                if(nodo_act.apuntadores[ijo_puta]):
+                    stacaca.append(nodo_act.apuntadores[ijo_puta])
+            logger_cagada.debug("agregados ijos de puta de %s" % nodo_act)
+            caracteres_stacaca.append(nodo_act.letra)
+            logger_cagada.debug("en ese puto la cadenita es %s" % caracteres_stacaca)
+            if(nodo_act.peso_n > maxima_caca):
+                cadena_maxima = "".join(caracteres_stacaca)
+                maxima_caca = nodo_act.peso_n
+                logger_cagada.debug("vaia mierda el max aora %s valor %u" % (cadena_maxima, maxima_caca))
+                
+    logger_cagada.debug("vaia mierda el max total aora %s valor %u" % (cadena_maxima, maxima_caca))
+    
+    return (cadena_maxima, maxima_caca)
+            
+def trie_shit_encuentra_nodo(querie):
+    global raiz_trie
+    encontrado = False
+    
+    nodo_act = raiz_trie
+    for cacar in querie:
+        assert cacar in nodo_act.apuntadores, "puta madre, el caracter %s no esta en el puto %s, q tiene apuntadores %s" % (cacar, nodo_act, nodo_act.apuntadores)
+        nodo_act = nodo_act.apuntadores[cacar]
+    
+    return nodo_act
+    
+        
+def trie_shit_core(lista_cadenas, queries):
+    global raiz_trie
+    maximas_mierdas = []
     
     trie_shit_construie(lista_cadenas)
     
+    for querie in queries:
+        nodo_base = trie_shit_encuentra_nodo(querie)
+        logger_cagada.debug("el nodo base de consulta %s es %s" % (nodo_base, querie))
+        sufijo, valor_max = trie_shit_dfs(nodo_base)
+#        maximas_mierdas.append(querie[:-1] + sufijo)
+        maximas_mierdas.append(valor_max)
+        
+    logger_cagada.debug("respuestas pendejas %s" % maximas_mierdas)
+    return maximas_mierdas
         
 def trie_shit_main():
     idx_linea = 0
@@ -85,6 +140,7 @@ def trie_shit_main():
     lineas = []
     lineas = list(fileinput.input())
     lista_cadenas = []
+    queries = []
     
     numero_cadenas, num_queries = [int(x) for x in lineas[idx_linea].strip().split(" ")]
     
@@ -92,18 +148,27 @@ def trie_shit_main():
     
     for idx_cadena in range(numero_cadenas):
         cadenita = lineas[idx_cadena]
-        
         cadena, peson = lineas[idx_linea].strip().split(" ")
-        
         lista_cadenas.append((cadena, int(peson)))
-        
         idx_linea += 1
     logger_cagada.debug("las cadenas %s" % lista_cadenas)
     
-    trie_shit_core(lista_cadenas)
+    
+    for idx_querie in range(num_queries):
+        querie = lineas[idx_linea]
+        queries.append(querie.strip())
+        idx_linea += 1
+        
+    logger_cagada.debug("las putas queries %s" % queries)
+    
+    cacas=trie_shit_core(lista_cadenas, queries)
+    
+    for caca in cacas:
+        print(caca)
     
 if __name__ == '__main__':
-    logging.basicConfig(level=nivel_log)
+    FORMAT = "[%(filename)s:%(lineno)s - %(funcName)20s() ] %(message)s"
+    logging.basicConfig(level=nivel_log, format=FORMAT)
     logger_cagada = logging.getLogger("asa")
     logger_cagada.setLevel(nivel_log)
     trie_shit_main()
