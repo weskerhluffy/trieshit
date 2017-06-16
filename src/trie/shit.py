@@ -11,7 +11,7 @@ import fileinput
 import string
 
 nivel_log = logging.ERROR
-#nivel_log = logging.DEBUG
+# nivel_log = logging.DEBUG
 logger_cagada = None
 raiz_trie = None
 
@@ -111,8 +111,12 @@ def trie_shit_encuentra_nodo(querie):
     
     nodo_act = raiz_trie
     for cacar in querie:
-        assert cacar in nodo_act.apuntadores, "puta madre, el caracter %s no esta en el puto %s, q tiene apuntadores %s" % (cacar, nodo_act, nodo_act.apuntadores)
-        nodo_act = nodo_act.apuntadores[cacar]
+#        assert cacar in nodo_act.apuntadores, "puta madre, el caracter %s no esta en el puto %s, q tiene apuntadores %s" % (cacar, nodo_act, nodo_act.apuntadores)
+        if(cacar in nodo_act.apuntadores):
+            nodo_act = nodo_act.apuntadores[cacar]
+        else:
+            nodo_act = None
+            break
     
     return nodo_act
     
@@ -125,10 +129,13 @@ def trie_shit_core(lista_cadenas, queries):
     
     for querie in queries:
         nodo_base = trie_shit_encuentra_nodo(querie)
-        logger_cagada.debug("el nodo base de consulta %s es %s" % (nodo_base, querie))
-        sufijo, valor_max = trie_shit_dfs(nodo_base)
-#        maximas_mierdas.append(querie[:-1] + sufijo)
-        maximas_mierdas.append(valor_max)
+        if(nodo_base):
+            logger_cagada.debug("el nodo base de consulta %s es %s" % (nodo_base, querie))
+            sufijo, valor_max = trie_shit_dfs(nodo_base)
+#            maximas_mierdas.append(querie[:-1] + sufijo)
+            maximas_mierdas.append(valor_max)
+        else:
+            maximas_mierdas.append(-1)
         
     logger_cagada.debug("respuestas pendejas %s" % maximas_mierdas)
     return maximas_mierdas
@@ -161,7 +168,7 @@ def trie_shit_main():
         
     logger_cagada.debug("las putas queries %s" % queries)
     
-    cacas=trie_shit_core(lista_cadenas, queries)
+    cacas = trie_shit_core(lista_cadenas, queries)
     
     for caca in cacas:
         print(caca)
