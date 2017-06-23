@@ -72,13 +72,17 @@ def trie_shit_construie(lista_cadenas):
         
         logger_cagada.debug("se termino de procesar mamada")
 
+mierda={}
 def trie_shit_dfs(nodo_inicial):
     global raiz_trie
+    global mierda
     ia_vistos = set()
     stacaca = []
     caracteres_stacaca = []
     maxima_caca = 0
     cadena_maxima = ""
+    if(nodo_inicial in mierda):
+        return mierda[nodo_inicial]
     
     stacaca.append(nodo_inicial)
     while(stacaca):
